@@ -12,7 +12,7 @@ A strongly and statically typed toy programming language (WIP)
 * Self hosting
 * C like syntax
 * Focus on data orientation
-* hook into llvm
+* Hook into LLVM
 * Multiple returns
 * Tail recursion
 * Simple 1 way syntax
