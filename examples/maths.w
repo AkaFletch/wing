@@ -1,4 +1,7 @@
 
+// Program returns 20
+// ignore
+// ignore
 int32 main() {
     int32 x = 10;
     int32 y;
@@ -7,4 +10,3 @@ int32 main() {
     return y;
 }
 
-// Program returns 20
