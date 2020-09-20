@@ -81,7 +81,7 @@ struct Token *handleInt(char *code, int *pos, struct Token *chain) {
             chain->type = ttFloat;
         }
         if(dot > 1 ){
-            printf("Lex error: position %d two dots in number", *pos);
+            printf("Lex error: position %d multiple decimal places in number\n", *pos);
             return 0;
         }
         buf[*pos-startPos] = code[*pos];

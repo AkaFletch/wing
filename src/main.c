@@ -1,5 +1,6 @@
 #include "lex.h"
 #include <stdio.h>
+
 int main(int argc, char **argv) {
     struct Token *chain = lexFile(argv[1]);
     if(chain == 0) {
