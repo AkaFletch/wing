@@ -3,7 +3,9 @@
 
 static const char *TOKEN_STRING[] = {
     "PlusSign", "NegativeSign", "AstrixSign", "SlashSign", "Identifier",
-    "Integer", "Float", "LeftBrace", "RightBrace", "LeftBracket", "RightBracket"
+    "Integer", "Float", "LeftBrace", "RightBrace", "LeftBracket", "RightBracket",
+    "Equals", "SemiColon", "AngleBracketLeft", "AngleBracketRight", "DoubleQoute",
+    "Percent", "Comma"
 };
 
 enum TokenType {
@@ -17,7 +19,14 @@ enum TokenType {
     ttLeftBrace,
     ttRightBrace,
     ttLeftBracket,
-    ttRightBracket
+    ttRightBracket,
+    ttEquals,
+    ttSemiColon,
+    ttAngleBracketLeft,
+    ttAngleBracketRight,
+    ttDoubleQoute,
+    ttPercent,
+    ttComma,
 };
 
 struct Token {

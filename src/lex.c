@@ -52,13 +52,15 @@ struct Token *handleIdentifier(char *code, int *pos, struct Token *chain) {
     chain->type = ttIdentifier;
     buf[*pos-startPos] = code[*pos];
     *pos = *pos+1;
-    while(isLetter(code[*pos])) {
+    while(isLetter(code[*pos]) || isInt(code[*pos])) {
         if(*pos-startPos > 32) {
             return 0;
         }
         buf[*pos-startPos] = code[*pos];
         *pos = *pos+1;
     }
+    buf[*pos-startPos] = '\0';
+    *pos = *pos-1;
     chain->value = buf;
     return chain;
 }
@@ -85,6 +87,8 @@ struct Token *handleInt(char *code, int *pos, struct Token *chain) {
         buf[*pos-startPos] = code[*pos];
         *pos = *pos+1;
     }
+    buf[*pos-startPos] = '\0';
+    *pos = *pos-1;
     chain->value = buf;
     return chain;
 }
@@ -132,6 +136,34 @@ struct Token *recogniseToken(char* code, int *pos) {
         }
         case ')': {
             newToken->type = ttRightBracket;
+            break;
+        }
+        case '=': {
+            newToken->type = ttEquals;
+            break;
+        }
+        case ';': {
+            newToken->type = ttSemiColon;
+            break;
+        }
+        case '<': {
+            newToken->type = ttAngleBracketLeft;
+            break;
+        }
+        case '>': {
+            newToken->type = ttAngleBracketRight;
+            break;
+        }
+        case '"': {
+            newToken->type = ttDoubleQoute;
+            break;
+        }
+        case '%': {
+            newToken->type = ttPercent;
+            break;
+        }
+        case ',': {
+            newToken->type = ttComma;
             break;
         }
         default: {
@@ -186,6 +218,21 @@ struct Token *lexFile(char* filename) {
     int pos = 0;
     while(1) {
         c = fgetc(file);
+        if(c == '/') {
+            char next = fgetc(file);
+            if(next == '/') {
+                c = next;
+                while(c != '\n') {
+                    if(feof(file)){
+                        break;
+                    }       
+                    c = fgetc(file);
+                }
+            }
+            else {
+                fseek(file, -1, pos);
+            }
+        }
         if(feof(file)) { 
             buff[pos] = '\0';
             break;
