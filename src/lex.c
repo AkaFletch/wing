@@ -214,40 +214,20 @@ struct Token *lex(char* code) {
 
 struct Token *lexFile(char* filename) {
     FILE *file;
-    char buff[4096];
+    int len;
     // TODO @Matt: This is a tiny buffer
-    snprintf(buff, strlen(filename)+1, "%s", filename);
-    file = fopen(buff, "r");
+    file = fopen(filename, "r");
     if(file == 0) {
-        printf("Couldn't open file %s\n", buff);
+        printf("Couldn't open file %s\n", filename);
         return 0;
     }
     char c;
     int pos = 0;
-    while(1) {
-        c = fgetc(file);
-        if(c == '/') {
-            char next = fgetc(file);
-            if(next == '/') {
-                c = next;
-                while(c != '\n') {
-                    if(feof(file)){
-                        break;
-                    }       
-                    c = fgetc(file);
-                }
-            }
-            else {
-                fseek(file, -1, pos);
-            }
-        }
-        if(feof(file)) { 
-            buff[pos] = '\0';
-            break;
-        }
-        buff[pos] = c;
-        pos++;
-    }
+    fseek(file, 0, SEEK_END);
+    len = ftell(file);
+    rewind (file);
+    char buff[len];
+    fread(buff, 1, len, file);
     fclose(file);
     return lex(buff);
 }
