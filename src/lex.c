@@ -166,6 +166,14 @@ struct Token *recogniseToken(char* code, int *pos) {
             newToken->type = ttComma;
             break;
         }
+        case '&': {
+            newToken->type = ttAmpersand;
+            break;
+        }
+        case '|': {
+            newToken->type = ttPipe;
+            break;
+        }
         default: {
             return 0;
         }
@@ -206,14 +214,14 @@ struct Token *lex(char* code) {
 
 struct Token *lexFile(char* filename) {
     FILE *file;
-    char buff[255];
+    char buff[4096];
+    // TODO @Matt: This is a tiny buffer
     snprintf(buff, strlen(filename)+1, "%s", filename);
     file = fopen(buff, "r");
     if(file == 0) {
         printf("Couldn't open file %s\n", buff);
         return 0;
     }
-    // TODO @Matt: This is a tiny buffer
     char c;
     int pos = 0;
     while(1) {
