@@ -181,16 +181,41 @@ struct Token *recogniseToken(char* code, int *pos) {
     return newToken;
 }
 
+int skipComments(char* code, int *pos) {
+    int skip = 0;
+    while(code[*pos] == '/' && code[*pos+1] == '/') {
+        skip = 1;
+        *pos += 2;
+        int checkNew = code[*pos] == '\n';
+        int checkEnd = code[*pos] == '\0';
+        while(!checkNew && !checkEnd) {
+            *pos += 1;
+            checkNew = code[*pos] == '\n';
+            checkEnd = code[*pos] == '\0';
+        }
+        *pos += 1;
+    }
+    if(skip) {
+        printf("Done skipping carrying on at %d\n", *pos);
+    }
+    return skip;
+}
 
 struct Token *lex(char* code) {
     char c = code[0];
     int pos = 0;
+    skipComments(code, &pos);
     while(strcmp(&c, "\0") != 0 && isWhitespace(c)) {
         pos++;
         c = code[pos];
     }
+    skipComments(code, &pos);
     struct Token *tokenChain = recogniseToken(code, &pos);
     struct Token *tailToken = tokenChain; 
+    if(tokenChain==0) {
+        printf("Failed to lex at position %d %s\n", pos, &c);
+        return 0;
+    }
     pos++;
     c = code[pos];
     while(strcmp(&c, "\0") != 0) {
@@ -198,6 +223,9 @@ struct Token *lex(char* code) {
             pos++;
             c = code[pos];
             continue; 
+        }
+        if(skipComments(code, &pos)) {
+            continue;
         }
         struct Token *newTailToken = recogniseToken(code, &pos);
         if(newTailToken==0) {
@@ -215,7 +243,6 @@ struct Token *lex(char* code) {
 struct Token *lexFile(char* filename) {
     FILE *file;
     int len;
-    // TODO @Matt: This is a tiny buffer
     file = fopen(filename, "r");
     if(file == 0) {
         printf("Couldn't open file %s\n", filename);
@@ -225,7 +252,7 @@ struct Token *lexFile(char* filename) {
     int pos = 0;
     fseek(file, 0, SEEK_END);
     len = ftell(file);
-    rewind (file);
+    fseek (file, 0, 0);
     char buff[len];
     fread(buff, 1, len, file);
     fclose(file);
