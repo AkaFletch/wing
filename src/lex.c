@@ -185,7 +185,7 @@ int skipComments(char* code, int *pos) {
     int skip = 0;
     while(code[*pos] == '/' && code[*pos+1] == '/') {
         skip = 1;
-        *pos += 2;
+        *pos += 1;
         int checkNew = code[*pos] == '\n';
         int checkEnd = code[*pos] == '\0';
         while(!checkNew && !checkEnd) {
@@ -194,9 +194,6 @@ int skipComments(char* code, int *pos) {
             checkEnd = code[*pos] == '\0';
         }
         *pos += 1;
-    }
-    if(skip) {
-        printf("Done skipping carrying on at %d\n", *pos);
     }
     return skip;
 }
@@ -219,17 +216,18 @@ struct Token *lex(char* code) {
     pos++;
     c = code[pos];
     while(strcmp(&c, "\0") != 0) {
+        if(skipComments(code, &pos) == 1) {
+            c = code[pos];
+            continue;
+        }
         if(isWhitespace(c) == 1) {
             pos++;
             c = code[pos];
             continue; 
         }
-        if(skipComments(code, &pos)) {
-            continue;
-        }
         struct Token *newTailToken = recogniseToken(code, &pos);
         if(newTailToken==0) {
-            printf("Failed to lex at position %d %s\n", pos, &c);
+            printf("Failed to lex inner at position %d %s\n", pos, &c);
             return 0;
         }
         tailToken->next = newTailToken;
@@ -254,7 +252,7 @@ struct Token *lexFile(char* filename) {
     len = ftell(file);
     fseek (file, 0, 0);
     char buff[len];
-    fread(buff, 1, len, file);
+    fread(buff, 1, len-sizeof(char), file);
     fclose(file);
     return lex(buff);
 }
